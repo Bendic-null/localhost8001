@@ -159,11 +159,52 @@ p {
 }
 
 .brand-name {
+    position: relative;
     font-family: 'Anton', sans-serif;
     font-size: 1.75rem;
     font-weight: 400;
     color: #D4D8DD;
-    text-shadow: 0 0 20px rgba(212, 216, 221, 0.6);
+    display: inline-block;
+}
+
+/* Shine overlay that only affects the text */
+.brand-name::after {
+    content: "TechVerse";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    /* Match the original text exactly */
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+
+    /* Gradient that sweeps across */
+    background: linear-gradient(120deg,
+            transparent 0%,
+            transparent 40%,
+            rgba(255, 255, 255, 0.8) 50%,
+            transparent 60%,
+            transparent 100%);
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    background-size: 200% 100%;
+    animation: textShine 2.2s linear infinite;
+}
+
+@keyframes textShine {
+    0% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: -100% 0;
+    }
 }
 
 .nav-toggle {
@@ -634,46 +675,147 @@ p {
    ============================= */
 .values-section {
     background: linear-gradient(135deg, #2E4156 0%, #1A2D42 100%);
+    padding: 4rem 0;
+    overflow: hidden;
 }
 
-.values-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+.values-section .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+/* Wrapper with fade edges */
+.values-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding: 1rem 0;
+}
+
+/* Left fade edge */
+.values-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100%;
+    background: linear-gradient(to right, #1A2D42 0%, transparent 100%);
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* Right fade edge */
+.values-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100%;
+    background: linear-gradient(to left, #1A2D42 0%, transparent 100%);
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* Scrolling track - KEY FIXES HERE */
+.values-track {
+    display: flex;
     gap: 2rem;
+    width: fit-content;
+    animation: scrollCards 20s linear infinite;
 }
 
+/* Pause animation on hover */
+.values-wrapper:hover .values-track {
+    animation-play-state: paused;
+}
+
+/* FIXED: Animation moves exactly 50% (original content width) */
+@keyframes scrollCards {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(calc(-50% - 1rem));
+    }
+}
+
+/* Value Cards */
 .value-card {
-    background: linear-gradient(135deg, #2E4156 0%, #1A2D42 100%);
+    flex-shrink: 0;
+    width: 300px;
+    background: linear-gradient(135deg, #232f3e 0%, #151f2b 100%);
     padding: 2.5rem 2rem;
     border-radius: 12px;
-    border: 1px solid rgba(192, 200, 202, 0.2);
-    transition: all 0.3s ease;
+    border: 1px solid rgba(192, 200, 202, 0.1);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+
+    /* Default dimmed state */
+    opacity: 0.5;
+    filter: brightness(0.6);
+    transform: scale(0.95);
+
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* All cards brighten slightly when wrapper is hovered */
+.values-wrapper:hover .value-card {
+    opacity: 0.7;
+    filter: brightness(0.8);
+}
+
+/* Individual card highlight on hover */
 .value-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 8px 30px rgba(170, 183, 183, 0.3);
-    border-color: rgba(192, 200, 202, 0.6);
+    opacity: 1 !important;
+    filter: brightness(1.15) !important;
+    transform: scale(1.05) translateY(-10px) !important;
+    background: linear-gradient(135deg, #3a4d63 0%, #243447 100%);
+    border-color: rgba(212, 216, 221, 0.4);
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.4),
+        0 0 30px rgba(212, 216, 221, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
+/* Icon styling */
 .value-icon {
     font-size: 2.5rem;
     margin-bottom: 1rem;
-    filter: drop-shadow(0 0 10px rgba(212, 216, 221, 0.5));
+    filter: drop-shadow(0 0 8px rgba(212, 216, 221, 0.2));
+    transition: all 0.4s ease;
+    display: inline-block;
 }
 
+.value-card:hover .value-icon {
+    filter: drop-shadow(0 0 15px rgba(212, 216, 221, 0.6));
+    transform: scale(1.2);
+}
+
+/* Card title */
 .value-card h3 {
     font-family: 'Anton', sans-serif;
     margin-bottom: 0.75rem;
     font-size: 1.25rem;
     color: #D4D8DD;
+    transition: all 0.3s ease;
 }
 
+.value-card:hover h3 {
+    color: #ffffff;
+}
+
+/* Card description */
 .value-card p {
     color: #C0C8CA;
-    font-size: 1rem;
+    font-size: 0.95rem;
     line-height: 1.7;
+    transition: color 0.3s ease;
+}
+
+.value-card:hover p {
+    color: #e8ecee;
 }
 
 /* =============================
